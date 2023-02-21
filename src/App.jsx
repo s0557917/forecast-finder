@@ -37,10 +37,10 @@ function App() {
         setBackground("bg-stormy")
         setWeatherLogo(<StormIcon />)
       } else if(weatherId > 300  && weatherId < 400 || weatherId > 500  && weatherId < 600) {
-        setBackground("bg-rainy")
+        setBackground("bg-rain")
         setWeatherLogo(<RainCloud />)
       } else if(weatherId > 600 && weatherId < 700) {
-        setBackground("bg-rainy")
+        setBackground("bg-rain")
         setWeatherLogo(<SnowIcon />)
       }
   }

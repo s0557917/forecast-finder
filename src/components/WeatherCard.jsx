@@ -11,16 +11,18 @@ export default function WeatherCard({weather, city, weatherLogo, forecastData}) 
         <>
             {!checkIfObjectIsEmpty(weather) &&
                 <div className="p-7">
-                    {/* <div className="bg-white/[.20] z-10 rounded-lg absolute top-0 bottom-0 left-0 right-0"></div> */}
+                    <div className="bg-white/[.10] z-10 rounded-lg absolute top-0 bottom-0 left-0 right-0"></div>
                     <div className="flex w-full items-center justify-between">
                     
-                        <div className="flex flex-col">
+                        <div className="flex flex-col z-20">
                             <p className="w-auto text-7xl">{city}</p>
-                            <p className="w-auto text-xl">{new Date().toDateString()}</p>
+                            <p className="w-auto text-lg">{new Date().toDateString()} - {weather.weather[0].description}</p>
                         </div>
                         
                         <div className="flex w-auto items-center z-20">
-                            {weatherLogo}
+                            <div className="mr-5">
+                                {weatherLogo}
+                            </div>
                             <div className="text-center">
                                 <p className="text-7xl pl-3">{Math.round(weather.main.temp)}°C</p>
                                 <p className="text-xl">Feels like: {Math.round(weather.main.feels_like)}°C</p>
