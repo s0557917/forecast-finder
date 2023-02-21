@@ -6,6 +6,12 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    backgroundImage: {
+      'clear': "url('/images/clearMountain.jpg')",
+      'cloudy': "url('/images/cloudy.jpg')",
+      'rain': "url('/images/rain.jpg')",
+      'storm': "url('/images/storm.jpg')",
+    },
   },
   plugins: [],
 }
