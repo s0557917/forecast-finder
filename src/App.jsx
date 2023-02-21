@@ -6,6 +6,7 @@ import StormIcon from "./components/icons/StormIcon";
 import RainCloud from "./components/icons/RainIcon";
 import SnowIcon from "./components/icons/SnowIcon"
 import checkIfObjectIsEmpty from "./utils/helpers"
+import { getDailyWeather } from "./utils/date-time";
 
 import { fetchData } from "./utils/fetch";
 
@@ -14,12 +15,14 @@ import useDebounce from "./hooks/useDebounce";
 function App() {
   
   const [weather, setWeather] = useState({})
+  const [forecastData, setForecastData] = useState([])
   const [city, setCity] = useState("")
+  const [cityInputValue, setCityInputValue] = useState("")
   const [weatherLogo, setWeatherLogo] = useState(<></>)
   const [background, setBackground] = useState("bg-slate-300")
   const [countries, setCountries] = useState([])
   
-  const debouncedValue = useDebounce(city, 500)
+  const debouncedValue = useDebounce(cityInputValue, 500)
 
   const switchIcon = () => {
       const weatherId = weather.weather[0].id
@@ -42,35 +45,50 @@ function App() {
       }
   }
 
-  async function fetchCityCoordinates() {
-    try{
-      const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${import.meta.env.VITE_WEATHER_API}`
-      const response = await fetch(url)
-      const data = await response.json()
+  async function fetchCityName(lat, lon) {
+    const url = `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${import.meta.env.VITE_WEATHER_API}`
+    const data = await fetchData(url)
+    if(data !== null && data !== undefined) {
+      setCity(data[0].name)
+    }
+  }
+
+  async function fetchCityCoordinates(city) {
+    const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${import.meta.env.VITE_WEATHER_API}`
+    const data = await fetchData(url)
+    if(data !== null && data !== undefined) {
       return {lat: data[0].lat, lon: data[0].lon}
-    } catch(error) {
-      console.log("Error: ", error)
+    } else {
       return null
     }
   } 
 
-  async function fetchWeatherAPI(lat, lon) {
-    
-    try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`
-      const response = await fetch(url)
-      const data = await response.json()
-      console.log("DATA: ", data)
+  async function fetchWeather(lat, lon) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`
+    const data = await fetchData(url)
+    if(data !== null && data !== undefined) {
       setWeather(data)
-    } catch(error) {
-      console.log("Error: ", error)
+    }
+  }
+
+  async function fetchForecastWeather(lat, lon) {
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`
+    const data = await fetchData(url)
+    if(data !== null && data !== undefined) {
+      const dailyForecastData = getDailyWeather(data.list)
+      setForecastData(dailyForecastData)
     }
   }
   
   useEffect(() => {
     async function getUserCoordinates() {
       navigator.geolocation.getCurrentPosition((position) => {
-        fetchWeatherAPI(position.coords.latitude, position.coords.longitude)
+        const lat = position.coords.latitude
+        const lon = position.coords.longitude
+
+        fetchCityName(lat, lon)
+        fetchWeather(lat, lon)
+        fetchForecastWeather(lat, lon)
       });
     }
 
@@ -78,12 +96,14 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if(city !== "") {
+    if(cityInputValue !== "") {
+      setCity(cityInputValue)
       async function getWeather() {
-        const coords = await fetchCityCoordinates()
+        const coords = await fetchCityCoordinates(cityInputValue)
   
         if(coords !== null && coords !== undefined) {
-          fetchWeatherAPI(coords.lat, coords.lon)
+          fetchWeather(coords.lat, coords.lon)
+          fetchForecastWeather(coords.lat, coords.lon)
         }
       } 
   
@@ -121,25 +141,20 @@ function App() {
 
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center">
-      <div className="flex w-2/5 my-2 justify-between">
+      <div className="flex w-4/5 my-2 justify-between">
         <input 
           type={"text"} 
           className={"w-3/5 rounded-md left-1/2 z-50"} 
-          onChange={(e) => setCity(e.target.value)}
+          onChange={(e) => setCityInputValue(e.target.value)}
         ></input>
-        <button 
-          className="w-1/5 bg-slate-100 rounded-md " 
-          // onClick={}
-        >
-          Search
-        </button>
       </div>
 
-      <div className={`w-2/5 h-4/5 rounded-lg bg-bottom bg-cover relative ${background}`}>
+      <div className={`w-4/5 h-4/5 rounded-lg bg-bottom bg-cover relative ${background}`}>
         <WeatherCard 
           weather={weather}
           weatherLogo={weatherLogo}
           city={city}
+          forecastData={forecastData}
         />
       </div>
     </div>

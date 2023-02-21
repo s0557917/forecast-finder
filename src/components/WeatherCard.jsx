@@ -1,29 +1,41 @@
 import checkIfObjectIsEmpty from "../utils/helpers"
+import ForecastSection from "./ForecastSection"
+import { convertDegreesToDirection } from "../utils/unit-convertion"
+import HumidityCard from "./info-cards/HumidityCard"
+import WindspeedCard from "./info-cards/WindspeedCard"
+import WindDirectionCard from "./info-cards/WindDirectionCard"
 
-export default function WeatherCard({weather, city, weatherLogo}) {
+export default function WeatherCard({weather, city, weatherLogo, forecastData}) {
+    
     return(
         <>
             {!checkIfObjectIsEmpty(weather) &&
-                <>
-                    <div className="bg-white/[.20] z-10 rounded-lg absolute top-0 bottom-0 left-0 right-0"></div>
-                    <div className="flex w-full items-center px-4 py-3 justify-between">
+                <div className="p-7">
+                    {/* <div className="bg-white/[.20] z-10 rounded-lg absolute top-0 bottom-0 left-0 right-0"></div> */}
+                    <div className="flex w-full items-center justify-between">
                     
-                        <p className="w-auto text-5xl z-20">{city}</p>
+                        <div className="flex flex-col">
+                            <p className="w-auto text-7xl">{city}</p>
+                            <p className="w-auto text-xl">{new Date().toDateString()}</p>
+                        </div>
                         
                         <div className="flex w-auto items-center z-20">
                             {weatherLogo}
-                            <p className="text-6xl pl-3">{weather.main.temp}°C</p>
+                            <div className="text-center">
+                                <p className="text-7xl pl-3">{Math.round(weather.main.temp)}°C</p>
+                                <p className="text-xl">Feels like: {Math.round(weather.main.feels_like)}°C</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <p>Weather: {weather.weather[0].main}</p>
-                        <p>Feels like: {weather.main.feels_like}°C</p>
-                        <p>Humidity: {weather.main.humidity}%</p>
-                        <p>Wind Speed: {weather.wind.speed} m/s</p>
-                        <p>Wind Direction: {weather.wind.deg}°</p>
+                    <div className="flex my-5 justify-evenly">
+                        <HumidityCard humidity={weather.main.humidity}/>
+                        <WindspeedCard windSpeed={weather.wind.speed}/>
+                        <WindDirectionCard windDirection={convertDegreesToDirection(weather.wind.deg)}/>
                     </div>
-                </>
+
+                    <ForecastSection forecastData={forecastData}/>
+                </div>
             }
         </>
     )
