@@ -1,4 +1,4 @@
-import checkIfObjectIsEmpty from "../utils/helpers"
+import isObjectEmpty from "../utils/helpers"
 import ForecastSection from "./ForecastSection"
 import { convertDegreesToDirection } from "../utils/unit-convertion"
 import HumidityCard from "./info-cards/HumidityCard"
@@ -9,7 +9,7 @@ export default function WeatherCard({weather, city, weatherLogo, forecastData}) 
     
     return(
         <>
-            {!checkIfObjectIsEmpty(weather) &&
+            {!isObjectEmpty(weather) &&
                 <div className="p-7">
                     <div className="bg-white/[.10] z-10 rounded-lg absolute top-0 bottom-0 left-0 right-0"></div>
                     <div className="flex w-full items-center justify-between">

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import WeatherCard from "./components/WeatherCard"
-import checkIfObjectIsEmpty from "./utils/helpers"
-import { getDailyWeather } from "./utils/date-time";
+import isObjectEmpty from "./utils/helpers"
 import countryCityList from "./data/country-city-list"; 
 import CityInput from "./components/CityInput";
 import { weatherDisplaySwitch } from "./utils/weather-display-switch";
-
-import { fetchJSONData, fetchSVGData } from "./utils/fetch";
+import {fetchCityName, fetchCityCoordinates, fetchWeather, fetchForecastWeather, fetchCountryFlag} from "./utils/fetchFunctions"
 
 import useDebounce from "./hooks/useDebounce";
 
@@ -24,59 +22,16 @@ function App() {
   
   const debouncedValue = useDebounce(cityInputValue, 500)
 
-  async function fetchCityName(lat, lon) {
-    const url = `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${import.meta.env.VITE_WEATHER_API}`
-    const data = await fetchJSONData(url)
-    if(data !== null && data !== undefined) {
-      setCity(data[0].name)
-    }
-  }
-
-  async function fetchCityCoordinates(city) {
-    const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${import.meta.env.VITE_WEATHER_API}`
-    const data = await fetchJSONData(url)
-    if(data !== null && data !== undefined) {
-      return {lat: data[0].lat, lon: data[0].lon}
-    } else {
-      return null
-    }
-  } 
-
-  async function fetchWeather(lat, lon) {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`
-    const data = await fetchJSONData(url)
-    if(data !== null && data !== undefined) {
-      setWeather(data)
-    }
-  }
-
-  async function fetchForecastWeather(lat, lon) {
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`
-    const data = await fetchJSONData(url)
-    if(data !== null && data !== undefined) {
-      const dailyForecastData = getDailyWeather(data.list)
-      setForecastData(dailyForecastData)
-    }
-  }
-
-  async function getCountryFlag(country) {
-    const url = `https://countryflagsapi.com/svg/${country.toLowerCase()}`
-    const data = await fetchSVGData(url)
-    if(data !== null && data !== undefined) {
-      setFlag(data)
-    }
-  }
-  
   useEffect(() => {
     async function getUserCoordinates() {
-      navigator.geolocation.getCurrentPosition((position) => {
+      navigator.geolocation.getCurrentPosition(async (position) => {
         const lat = position.coords.latitude
         const lon = position.coords.longitude
 
-        fetchCityName(lat, lon)
-        fetchWeather(lat, lon)
-        fetchForecastWeather(lat, lon)
-      });
+        setCity(await fetchCityName(lat, lon) || "")
+        setWeather(await fetchWeather(lat, lon) || {})
+        setForecastData(await fetchForecastWeather(lat, lon) || [])
+      })
     }
 
     getUserCoordinates()
@@ -86,28 +41,28 @@ function App() {
     if(cityInputValue !== "") {
       setCity(cityInputValue)
       
-      async function checkCityAndGetFlag() {
-        let city = ""
-        let land = ""
+      // async function checkCityAndGetFlag() {
+      //   let city = ""
+      //   let land = ""
   
-        for (const [key, value] of Object.entries(countryCityList)) {
-          const matchingCity = value.find((city) => city.toLowerCase() === cityInputValue.toLowerCase())
-          if(matchingCity !== undefined) {
-            city = matchingCity
-            land = key
+      //   for (const [key, value] of Object.entries(countryCityList)) {
+      //     const matchingCity = value.find((city) => city.toLowerCase() === cityInputValue.toLowerCase())
+      //     if(matchingCity !== undefined) {
+      //       city = matchingCity
+      //       land = key
   
-            await getCountryFlag(land)
-            break
-          } 
-        }
-      }
+      //       // await fetchCountryFlag(land)
+      //       break
+      //     } 
+      //   }
+      // }
 
       async function getWeather() {
         const coords = await fetchCityCoordinates(cityInputValue)
   
         if(coords !== null && coords !== undefined) {
-          fetchWeather(coords.lat, coords.lon)
-          fetchForecastWeather(coords.lat, coords.lon)
+          setWeather(await fetchWeather(coords.lat, coords.lon) || {})
+          setForecastData(await fetchForecastWeather(coords.lat, coords.lon) || [])
         }
       } 
   
@@ -118,7 +73,7 @@ function App() {
 
 
   useEffect(() => {
-    if(!checkIfObjectIsEmpty(weather)) {
+    if(!isObjectEmpty(weather)) {
         const {bg, icon} = weatherDisplaySwitch(weather.weather[0].id)
         if(bg !== "" && icon !== <></>) {
           setBackground(bg)
