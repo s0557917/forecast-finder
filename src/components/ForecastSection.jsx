@@ -27,7 +27,10 @@ export default function ForecastSection({forecastData}) {
                         <p className="text-sm mb-2 font-bold text-center">{weekDay}</p>
                         <ul className="space-y-1">
                             {value.map((fc) => {
-                                return <li className="text-xs justify-between w-auto flex" key={fc.time}>
+                                return <li 
+                                    className="text-xs justify-between w-auto flex" 
+                                    key={fc.time}
+                                >
                                     <p>{`${fc.time.split(":", 2).join(":")}`}</p>
                                     <p>{`${Math.round(fc.forecast.temp)}°C`}</p>
                                 </li>

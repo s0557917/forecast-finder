@@ -40,6 +40,7 @@ function App() {
   useEffect(() => {
     if(cityInputValue !== "") {
       setCity(cityInputValue)
+      setCityInputValue("")
       
       // async function checkCityAndGetFlag() {
       //   let city = ""
@@ -66,7 +67,7 @@ function App() {
         }
       } 
   
-      checkCityAndGetFlag()
+      // checkCityAndGetFlag()
       getWeather()
     }
   }, [debouncedValue])
@@ -87,8 +88,10 @@ function App() {
 
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-red-400">
-
-      <CityInput onChange={setCityInputValue}/>
+      <CityInput
+        inputValue={cityInputValue} 
+        onChange={setCityInputValue}
+      />
       <div className={`w-4/5 rounded-lg bg-bottom bg-cover relative ${background} box-border`}>
         <WeatherCard 
           weather={weather}
