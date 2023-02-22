@@ -16,9 +16,6 @@ function App() {
   const [cityInputValue, setCityInputValue] = useState("")
   const [weatherLogo, setWeatherLogo] = useState(<></>)
   const [background, setBackground] = useState("bg-slate-300")
-  const [countries, setCountries] = useState([])
-
-  const [flag, setFlag] = useState(<h1>Flag</h1>)
   
   const debouncedValue = useDebounce(cityInputValue, 500)
 
@@ -41,22 +38,6 @@ function App() {
     if(cityInputValue !== "") {
       setCity(cityInputValue)
       setCityInputValue("")
-      
-      // async function checkCityAndGetFlag() {
-      //   let city = ""
-      //   let land = ""
-  
-      //   for (const [key, value] of Object.entries(countryCityList)) {
-      //     const matchingCity = value.find((city) => city.toLowerCase() === cityInputValue.toLowerCase())
-      //     if(matchingCity !== undefined) {
-      //       city = matchingCity
-      //       land = key
-  
-      //       // await fetchCountryFlag(land)
-      //       break
-      //     } 
-      //   }
-      // }
 
       async function getWeather() {
         const coords = await fetchCityCoordinates(cityInputValue)
@@ -67,7 +48,6 @@ function App() {
         }
       } 
   
-      // checkCityAndGetFlag()
       getWeather()
     }
   }, [debouncedValue])
@@ -84,8 +64,6 @@ function App() {
     }
   },[weather])
   
-
-
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-red-400">
       <CityInput
