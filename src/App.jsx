@@ -14,7 +14,7 @@ function App() {
   const [forecastData, setForecastData] = useState([])
   const [city, setCity] = useState("")
   const [cityInputValue, setCityInputValue] = useState("")
-  const [weatherLogo, setWeatherLogo] = useState(<></>)
+  const [weatherIcon, setWeatherIcon] = useState(<></>)
   const [background, setBackground] = useState("bg-slate-300")
   
   const debouncedValue = useDebounce(cityInputValue, 500)
@@ -58,22 +58,22 @@ function App() {
         const {bg, icon} = weatherDisplaySwitch(weather.weather[0].id)
         if(bg !== "" && icon !== <></>) {
           setBackground(bg)
-          setWeatherLogo(icon)
+          setWeatherIcon(icon)
         }
 
     }
   },[weather])
-  
+
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-red-400">
-      <CityInput
-        inputValue={cityInputValue} 
-        onChange={setCityInputValue}
-      />
-      <div className={`w-4/5 rounded-lg bg-bottom bg-cover relative ${background} box-border`}>
+    <div className="flex items-center justify-center h-screen">
+      <div className={`md:w-4/5 w-full md:h-auto h-screen rounded-lg bg-bottom bg-cover box-border ${background}`}>
+        <CityInput
+          inputValue={cityInputValue} 
+          onChange={setCityInputValue}
+        />
         <WeatherCard 
           weather={weather}
-          weatherLogo={weatherLogo}
+          weatherIcon={weatherIcon}
           city={city}
           forecastData={forecastData}
         />

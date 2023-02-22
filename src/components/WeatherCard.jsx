@@ -1,41 +1,29 @@
 import isObjectEmpty from "../utils/helpers"
 import ForecastSection from "./ForecastSection"
+import InfoBlocks from "./InfoBlocks"
+import CityAndTemperatureSection from "./CityAndTemperatureSection"
 import { convertDegreesToDirection } from "../utils/unit-convertion"
-import HumidityCard from "./info-cards/HumidityCard"
-import WindspeedCard from "./info-cards/WindspeedCard"
-import WindDirectionCard from "./info-cards/WindDirectionCard"
 
-export default function WeatherCard({weather, city, weatherLogo, forecastData}) {
+export default function WeatherCard({weather, city, weatherIcon, forecastData}) {
     
     return(
         <>
             {!isObjectEmpty(weather) &&
-                <div className="p-7">
-                    <div className="bg-white/[.10] z-10 rounded-lg absolute top-0 bottom-0 left-0 right-0"></div>
-                    <div className="flex w-full items-center justify-between">
-                    
-                        <div className="flex flex-col z-20">
-                            <p className="w-auto text-7xl">{city}</p>
-                            <p className="w-auto text-lg">{new Date().toDateString()} - {weather.weather[0].description}</p>
-                        </div>
-                        
-                        <div className="flex w-auto items-center z-20">
-                            <div className="mr-5">
-                                {weatherLogo}
-                            </div>
-                            <div className="text-center">
-                                <p className="text-7xl pl-3">{Math.round(weather.main.temp)}°C</p>
-                                <p className="text-xl">Feels like: {Math.round(weather.main.feels_like)}°C</p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="p-7 h-full">
+                    {/* <div className="bg-white/[.10] z-10 rounded-lg absolute top-0 bottom-0 left-0 right-0"></div> */}
+                    <CityAndTemperatureSection 
+                        city={city}
+                        description={weather.weather[0].description}
+                        weatherIcon={weatherIcon}
+                        temp={weather.main.temp}
+                        feelsLikeTemp={weather.main.feels_like}
+                    />
 
-                    <div className="flex my-5 justify-evenly ">
-                        <HumidityCard humidity={weather.main.humidity}/>
-                        <WindspeedCard windSpeed={weather.wind.speed}/>
-                        <WindDirectionCard windDirection={convertDegreesToDirection(weather.wind.deg)}/>
-                    </div>
-
+                    <InfoBlocks 
+                        humidity={weather.main.humidity} 
+                        speed={weather.wind.speed} 
+                        direction={convertDegreesToDirection(weather.wind.deg)}
+                    />
                     <ForecastSection forecastData={forecastData}/>
                 </div>
             }
