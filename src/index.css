@@ -5,6 +5,7 @@ body {
   background-color: #272830;
   font-family: 'Poppins', sans-serif;
   /* font-family: 'Roboto', sans-serif; */
+  box-sizing: border-box
 
 }
 

@@ -30,7 +30,7 @@ export default function WeatherCard({weather, city, weatherLogo, forecastData}) 
                         </div>
                     </div>
 
-                    <div className="flex my-5 justify-evenly">
+                    <div className="flex my-5 justify-evenly ">
                         <HumidityCard humidity={weather.main.humidity}/>
                         <WindspeedCard windSpeed={weather.wind.speed}/>
                         <WindDirectionCard windDirection={convertDegreesToDirection(weather.wind.deg)}/>

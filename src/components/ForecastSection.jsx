@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import TempChart from "./TempChart";
 
 export default function ForecastSection({forecastData}) {
     
@@ -12,8 +13,17 @@ export default function ForecastSection({forecastData}) {
                 const date = new Date(key)
                 const weekDay = new Intl.DateTimeFormat("en-US", options).format(date)
 
+                const tempData = value.map((fc) => {
+                    return {
+                        time: fc.time.split(":", 2).join(":"), 
+                        temperature: Math.round(fc.forecast.temp),
+                    }
+                })
+
                 html.push(
                     <div className="bg-white/[.6] m-2 p-2 rounded-md h-auto w-1/6">
+                        {/* {console.log("DATA ", tempData)}
+                        <TempChart title={weekDay} tempData={tempData}/> */}
                         <p className="text-sm mb-2 font-bold text-center">{weekDay}</p>
                         <ul className="space-y-1">
                             {value.map((fc) => {
